@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BancoSC — Farma & Negócios 2026</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 230px;
+      min-width: 230px;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+    }
+
+    .sidebar-brand {
+      padding: 1.25rem 1rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .banco-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .banco-logo-mark {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: #185FA5;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+    .banco-logo-text .b1 { font-size: 14px; font-weight: 700; color: #185FA5; }
+    .banco-logo-text .b2 { font-size: 11px; color: #9ca3af; }
+
+    .event-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500;
+      color: #E05A1C; background: #FEF0E7;
+      border: 1px solid #F5C4A0;
+      padding: 3px 9px; border-radius: 20px;
+    }
+
+    .sidebar-nav {
+      padding: 1rem;
+      display: flex; flex-direction: column; gap: 3px;
+      flex: 1;
+    }
+    .nav-label {
+      font-size: 10px; font-weight: 600; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0 8px; margin-bottom: 6px;
+    }
+    .nav-btn {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 10px; border-radius: 8px;
+      border: none; background: none;
+      cursor: pointer; font-size: 13px; color: #4b5563;
+      width: 100%; text-align: left; transition: background 0.15s;
+    }
+    .nav-btn:hover { background: #f3f4f6; }
+    .nav-btn.active { background: #E6F1FB; color: #185FA5; font-weight: 600; }
+    .nav-btn i { font-size: 17px; }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid #e5e7eb;
+      font-size: 11px; color: #9ca3af; line-height: 1.6;
+    }
+    .sidebar-footer strong { color: #6b7280; display: block; }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      margin-left: 230px;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.9rem 1.75rem;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar-inner {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .fn-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 700; color: #185FA5;
+    }
+    .fn-badge .amp { color: #E05A1C; }
+    .fn-year {
+      font-size: 11px; font-weight: 700; color: white;
+      background: #E05A1C; padding: 2px 8px; border-radius: 4px;
+    }
+    .topbar-meta {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: #6b7280;
+    }
+    .meta-item i { font-size: 14px; color: #9ca3af; }
+
+    .main-body { flex: 1; padding: 2rem 1.75rem; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* FORM */
+    .form-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      max-width: 480px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .form-card-header {
+      padding: 1.5rem;
+      background: #185FA5;
+    }
+    .form-card-header h2 { font-size: 17px; font-weight: 600; color: white; margin-bottom: 3px; }
+    .form-card-header p { font-size: 13px; color: rgba(255,255,255,0.72); }
+
+    .form-card-body { padding: 1.5rem; }
+    .field { margin-bottom: 1.1rem; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: #4b5563; margin-bottom: 5px; }
+    .field label .opt { font-weight: 400; color: #9ca3af; font-size: 11px; }
+    .field input {
+      width: 100%; height: 40px; padding: 0 12px;
+      font-size: 13px; border: 1px solid #d1d5db; border-radius: 8px;
+      background: white; color: #1a1a1a; outline: none; transition: border 0.15s;
+    }
+    .field input:focus { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.12); }
+    .field input::placeholder { color: #9ca3af; }
+
+    .btn-primary {
+      width: 100%; height: 42px;
+      background: #185FA5; color: white; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+      margin-top: 0.5rem; transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #0C447C; }
+
+    .toast {
+      display: none; align-items: center; gap: 8px;
+      background: #f0fdf4; color: #15803d;
+      font-size: 13px; padding: 10px 14px;
+      border-radius: 8px; border: 1px solid #bbf7d0;
+      margin-top: 12px;
+    }
+    .toast.show { display: flex; }
+
+    /* REPO */
+    .repo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .repo-top h2 { font-size: 17px; font-weight: 600; }
+    .actions-row { display: flex; gap: 8px; }
+
+    .repo-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .stat-card { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; }
+    .stat-card .sl { font-size: 10px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+    .stat-card .sv { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-top: 4px; }
+
+    .table-wrap { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: #f9fafb; }
+    th { text-align: left; padding: 10px 14px; font-size: 10px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.07em; border-bottom: 1px solid #e5e7eb; }
+    td { padding: 12px 14px; color: #1a1a1a; border-bottom: 1px solid #f3f4f6; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9fafb; }
+
+    .empty-repo { text-align: center; padding: 3rem; color: #9ca3af; font-size: 14px; }
+    .empty-repo i { font-size: 32px; display: block; margin-bottom: 8px; color: #d1d5db; }
+
+    .btn-sm {
+      display: flex; align-items: center; gap: 5px;
+      background: white; border: 1px solid #d1d5db;
+      color: #4b5563; padding: 0 13px; height: 34px;
+      border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-sm:hover { background: #f3f4f6; }
+    .btn-sm-danger { color: #dc2626; }
+    .btn-sm-danger:hover { background: #fef2f2; border-color: #fca5a5; }
+
+    .tag-cnpj {
+      font-size: 11px; background: #f3f4f6; color: #6b7280;
+      padding: 2px 8px; border-radius: 20px; border: 1px solid #e5e7eb;
+    }
+
+    /* QR */
+    .qr-wrap { max-width: 420px; }
+    .qr-wrap h2 { font-size: 17px; font-weight: 600; margin-bottom: 5px; }
+    .qr-wrap > p { font-size: 13px; color: #6b7280; margin-bottom: 1.25rem; line-height: 1.6; }
+    .qr-input-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+    .qr-input-row input {
+      flex: 1; height: 40px; padding: 0 12px; font-size: 13px;
+      border: 1px solid #d1d5db; border-radius: 8px;
+      background: white; color: #1a1a1a; outline: none;
+    }
+    .qr-input-row input:focus { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.12); }
+    .qr-box {
+      background: white; border: 1px solid #e5e7eb; border-radius: 14px;
+      padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .qr-label { text-align: center; font-size: 12px; color: #6b7280; }
+    .qr-label strong { display: block; font-size: 14px; color: #1a1a1a; margin-bottom: 2px; word-break: break-all; }
+    .btn-dl {
+      display: flex; align-items: center; gap: 6px;
+      background: #185FA5; color: white; border: none;
+      padding: 0 20px; height: 38px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s;
+    }
+    .btn-dl:hover { background: #0C447C; }
+
+    .info-blue {
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 8px; padding: 12px 14px;
+      font-size: 12px; color: #1d4ed8;
+      display: flex; gap: 8px; align-items: flex-start; margin-top: 1.25rem; line-height: 1.6;
+    }
+    .info-blue i { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+    /* MOBILE */
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .topbar-meta { display: none; }
+      .repo-stats { grid-template-columns: repeat(2, 1fr); }
+      .mobile-nav {
+        display: flex; background: white;
+        border-top: 1px solid #e5e7eb;
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+      }
+      .mobile-nav button {
+        flex: 1; display: flex; flex-direction: column; align-items: center;
+        gap: 3px; padding: 10px 0; border: none; background: none;
+        font-size: 10px; color: #6b7280; cursor: pointer;
+      }
+      .mobile-nav button.active { color: #185FA5; font-weight: 600; }
+      .mobile-nav button i { font-size: 20px; }
+      .main-body { padding-bottom: 5rem; }
+    }
+    @media (min-width: 641px) { .mobile-nav { display: none; } }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="banco-logo">
+        <div class="banco-logo-mark">SC</div>
+        <div class="banco-logo-text">
+          <div class="b1">BancoSC</div>
+          <div class="b2">Grupo SC</div>
+        </div>
+      </div>
+      <span class="event-tag">
+        <i class="ti ti-calendar-event"></i>
+        Farma &amp; Negócios 2026
+      </span>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <button class="nav-btn active" onclick="show('form', this)">
+        <i class="ti ti-clipboard-text"></i> Formulário
+      </button>
+      <button class="nav-btn" onclick="show('repo', this)">
+        <i class="ti ti-table"></i> Repositório
+      </button>
+      <button class="nav-btn" onclick="show('qr', this)">
+        <i class="ti ti-qrcode"></i> QR Code
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <strong>Expominas — BH/MG</strong>
+      25 de junho de 2026
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="fn-badge">
+          <i class="ti ti-pill" style="font-size:17px;color:#E05A1C"></i>
+          farma <span class="amp">&amp;</span>&nbsp;negócios
+          <span class="fn-year">2026</span>
+        </div>
+        <div class="topbar-meta">
+          <div class="meta-item"><i class="ti ti-map-pin"></i> Expominas, Belo Horizonte/MG</div>
+          <div class="meta-item"><i class="ti ti-calendar"></i> 25/06/2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-body">
+
+      <!-- FORM -->
+      <div id="panel-form" class="panel active">
+        <div class="form-card">
+          <div class="form-card-header">
+            <h2>Cadastre seu interesse</h2>
+            <p>Preencha os dados e a equipe BancoSC entrará em contato</p>
+          </div>
+          <div class="form-card-body">
+            <div class="field">
+              <label>Nome da empresa</label>
+              <input id="f-empresa" type="text" placeholder="Ex: Farmácia Central Ltda" />
+            </div>
+            <div class="field">
+              <label>CNPJ <span class="opt">(opcional)</span></label>
+              <input id="f-cnpj" type="text" placeholder="00.000.000/0001-00" maxlength="18" />
+            </div>
+            <div class="field">
+              <label>Telefone</label>
+              <input id="f-tel" type="tel" placeholder="(48) 99999-0000" maxlength="15" />
+            </div>
+            <div class="field">
+              <label>Nome do contato</label>
+              <input id="f-contato" type="text" placeholder="Nome completo" />
+            </div>
+            <button class="btn-primary" onclick="submitForm()">
+              <i class="ti ti-send"></i> Enviar cadastro
+            </button>
+            <div id="toast" class="toast">
+              <i class="ti ti-circle-check"></i>
+              Cadastro salvo! Obrigado pelo interesse no BancoSC.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPO -->
+      <div id="panel-repo" class="panel">
+        <div class="repo-top">
+          <h2>Repositório de leads</h2>
+          <div class="actions-row">
+            <button class="btn-sm" onclick="exportCSV()">
+              <i class="ti ti-download"></i> Exportar CSV
+            </button>
+            <button class="btn-sm btn-sm-danger" onclick="clearAll()">
+              <i class="ti ti-trash"></i> Limpar
+            </button>
+          </div>
+        </div>
+        <div class="repo-stats">
+          <div class="stat-card"><div class="sl">Total</div><div class="sv" id="stat-total">0</div></div>
+          <div class="stat-card"><div class="sl">Com CNPJ</div><div class="sv" id="stat-cnpj">0</div></div>
+          <div class="stat-card"><div class="sl">Hoje</div><div class="sv" id="stat-hoje">0</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Empresa</th><th>CNPJ</th><th>Telefone</th><th>Contato</th><th>Hora</th></tr>
+            </thead>
+            <tbody id="leads-body"></tbody>
+          </table>
+          <div id="empty-repo" class="empty-repo">
+            <i class="ti ti-inbox"></i>
+            Nenhum lead ainda. Preencha o formulário para começar.
+          </div>
+        </div>
+      </div>
+
+      <!-- QR -->
+      <div id="panel-qr" class="panel">
+        <div class="qr-wrap">
+          <h2>Gerar QR Code</h2>
+          <p>Cole o link deste site publicado para gerar o QR Code do evento. Após publicar no GitHub Pages, seu link será:<br><strong style="color:#185FA5">https://ThiagoBancoSC.github.io/bancosc-farma2026</strong></p>
+          <div class="qr-input-row">
+            <input id="qr-url" type="url" placeholder="https://ThiagoBancoSC.github.io/bancosc-farma2026" />
+            <button class="btn-primary" style="width:auto;padding:0 16px;margin:0;white-space:nowrap" onclick="generateQR()">
+              <i class="ti ti-qrcode"></i> Gerar
+            </button>
+          </div>
+          <div class="qr-box">
+            <canvas id="qr-canvas" width="200" height="200"></canvas>
+            <div class="qr-label">
+              <strong id="qr-url-label">Aguardando URL...</strong>
+              Escaneie para acessar o formulário
+            </div>
+            <button class="btn-dl" onclick="downloadQR()">
+              <i class="ti ti-download"></i> Baixar PNG
+            </button>
+          </div>
+          <div class="info-blue">
+            <i class="ti ti-info-circle"></i>
+            <span>Após ativar o GitHub Pages (passo 2), cole o link acima, gere e baixe o QR Code em PNG para imprimir e exibir no stand.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <button class="active" onclick="show('form', this)"><i class="ti ti-clipboard-text"></i>Formulário</button>
+  <button onclick="show('repo', this)"><i class="ti ti-table"></i>Repositório</button>
+  <button onclick="show('qr', this)"><i class="ti ti-qrcode"></i>QR Code</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  let leads = [];
+
+  function show(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn, .mobile-nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelectorAll('.nav-btn, .mobile-nav button').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
+    });
+    if (id === 'repo') renderRepo();
+  }
+
+  function maskCNPJ(v) {
+    v = v.replace(/\D/g,'').slice(0,14);
+    return v.replace(/^(\d{2})(\d)/,'$1.$2')
+            .replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+            .replace(/\.(\d{3})(\d)/,'.$1/$2')
+            .replace(/(\d{4})(\d)/,'$1-$2');
+  }
+  function maskTel(v) {
+    v = v.replace(/\D/g,'').slice(0,11);
+    if (v.length <= 10) return v.replace(/^(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3').trim();
+    return v.replace(/^(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3').trim();
+  }
+
+  document.getElementById('f-cnpj').addEventListener('input', function(){ this.value = maskCNPJ(this.value); });
+  document.getElementById('f-tel').addEventListener('input', function(){ this.value = maskTel(this.value); });
+
+  function submitForm() {
+    const empresa = document.getElementById('f-empresa').value.trim();
+    const tel = document.getElementById('f-tel').value.trim();
+    const contato = document.getElementById('f-contato').value.trim();
+    if (!empresa || !tel || !contato) { alert('Preencha os campos obrigatórios: Empresa, Telefone e Contato.'); return; }
+    leads.push({
+      empresa, cnpj: document.getElementById('f-cnpj').value.trim() || '—',
+      tel, contato,
+      hora: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+    });
+    ['f-empresa','f-cnpj','f-tel','f-contato'].forEach(id => document.getElementById(id).value = '');
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function renderRepo() {
+    document.getElementById('stat-total').textContent = leads.length;
+    document.getElementById('stat-cnpj').textContent = leads.filter(l=>l.cnpj!=='—').length;
+    document.getElementById('stat-hoje').textContent = leads.length;
+    const body = document.getElementById('leads-body');
+    const empty = document.getElementById('empty-repo');
+    if (!leads.length) { body.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+    body.innerHTML = leads.map((l,i)=>`
+      <tr>
+        <td style="color:#9ca3af;font-size:11px">${i+1}</td>
+        <td style="font-weight:600">${l.empresa}</td>
+        <td>${l.cnpj==='—'?'<span style="color:#d1d5db">—</span>':`<span class="tag-cnpj">${l.cnpj}</span>`}</td>
+        <td>${l.tel}</td>
+        <td>${l.contato}</td>
+        <td style="color:#9ca3af">${l.hora}</td>
+      </tr>`).join('');
+  }
+
+  function exportCSV() {
+    if (!leads.length) { alert('Nenhum lead para exportar.'); return; }
+    const csv = ['Empresa,CNPJ,Telefone,Contato,Hora',
+      ...leads.map(l=>`"${l.empresa}","${l.cnpj}","${l.tel}","${l.contato}","${l.hora}"`)
+    ].join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+    a.download = 'leads_bancosc_farma2026.csv';
+    a.click();
+  }
+
+  function clearAll() {
+    if (!leads.length) return;
+    if (confirm('Apagar todos os leads?')) { leads=[]; renderRepo(); }
+  }
+
+  function generateQR() {
+    const url = document.getElementById('qr-url').value.trim();
+    if (!url) { alert('Cole uma URL primeiro.'); return; }
+    const canvas = document.getElementById('qr-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,200,200);
+    const tmp = document.createElement('div');
+    new QRCode(tmp,{text:url,width:200,height:200,colorDark:'#0C447C',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+    setTimeout(()=>{
+      const el = tmp.querySelector('img')||tmp.querySelector('canvas');
+      if(el){ const i=new Image(); i.onload=()=>ctx.drawImage(i,0,0,200,200); i.src=el.src||(el.toDataURL?el.toDataURL():''); }
+      const u=url.length>46?url.slice(0,44)+'...':url;
+      document.getElementById('qr-url-label').textContent=u;
+    },300);
+  }
+
+  function downloadQR() {
+    const a=document.createElement('a');
+    a.download='qrcode_bancosc_farma2026.png';
+    a.href=document.getElementById('qr-canvas').toDataURL('image/png');
+    a.click();
+  }
+</script>
+</body>
+</html>

@@ -459,20 +459,46 @@
   document.getElementById('f-cnpj').addEventListener('input', function(){ this.value = maskCNPJ(this.value); });
   document.getElementById('f-tel').addEventListener('input', function(){ this.value = maskTel(this.value); });
 
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxgODSVs_xNFLUPO6K9Ww32K55aTh5EFcEpZzzZv9wObwkzLmR42HEIhjclZVQtmxWM/exec';
+
   function submitForm() {
     const empresa = document.getElementById('f-empresa').value.trim();
     const tel = document.getElementById('f-tel').value.trim();
     const contato = document.getElementById('f-contato').value.trim();
     if (!empresa || !tel || !contato) { alert('Preencha os campos obrigatórios: Empresa, Telefone e Contato.'); return; }
-    leads.push({
-      empresa, cnpj: document.getElementById('f-cnpj').value.trim() || '—',
-      tel, contato,
+
+    const lead = {
+      empresa,
+      cnpj: document.getElementById('f-cnpj').value.trim() || '—',
+      telefone: tel,
+      contato,
       hora: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+    };
+
+    const btn = document.querySelector('.btn-primary');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lead)
+    })
+    .then(() => {
+      leads.push({ ...lead, tel });
+      ['f-empresa','f-cnpj','f-tel','f-contato'].forEach(id => document.getElementById(id).value = '');
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    })
+    .catch(() => {
+      alert('Erro ao enviar. Verifique sua conexão e tente novamente.');
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-send"></i> Enviar cadastro';
     });
-    ['f-empresa','f-cnpj','f-tel','f-contato'].forEach(id => document.getElementById(id).value = '');
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
   function renderRepo() {
